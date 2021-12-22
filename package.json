@@ -1,4 +1,21 @@
 {
+  "name": "crypto-dashboard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gonzzoli/cypto-dashboard.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gonzzoli/cypto-dashboard/issues"
+  },
+  "homepage": "https://github.com/gonzzoli/cypto-dashboard#readme",
   "dependencies": {
     "chart.js": "^3.6.2"
   }
