@@ -144,8 +144,8 @@ nav .links p:hover {
   transition: .1s ease-in-out;
 }
 
-.main .coins-list .search-coins .options .option .id {
-  font-size: 10px;
+.main .coins-list .search-coins .options .option p {
+  cursor: default;
 }
 
 .main .coins-list .search-coins .options .option:hover {
@@ -182,28 +182,15 @@ nav .links p:hover {
           justify-content: space-between;
   padding: 2px 5px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.274);
-}
-
-.main .coins-list .favorite-coins .coin p {
   cursor: default;
 }
 
-.main .coins-list .favorite-coins .coin p span {
+.main .coins-list .favorite-coins .coin .coin-list-symbol {
+  font-size: 1rem;
+}
+
+.main .coins-list .favorite-coins .coin .coin-list-price {
   font-size: .8rem;
-}
-
-.main .coins-list .favorite-coins .coin .right {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  font-size: 16px;
-}
-
-.main .coins-list .favorite-coins .coin .right i {
-  padding: 5px;
-  cursor: pointer;
+  margin-right: 8px;
 }
 /*# sourceMappingURL=styles.css.map */
