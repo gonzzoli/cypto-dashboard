@@ -1,8 +1,19 @@
 const ctx1Cont = document.querySelector('.chart1-container')
 const ctx1 = document.querySelector('#chart1')
 const ctx2 = document.querySelector('#chart2')
+const coinSearchInput = document.querySelector('#coin-to-search')
+const coinSearchSuggestions = document.querySelector('#coin-names')
 
-
+async function getCoinsList() {
+    const response = await fetch('https://api.coingecko.com/api/v3/coins/list')
+    const data = await response.json()
+    return data
+}
+getCoinsList()
+.then(data=> {
+    console.log(data)
+})
+.catch(err => console.log(err))
 async function getCoinData(coin) {
     const response = await fetch('https://api.coingecko.com/api/v3/coins/terra-luna/market_chart?vs_currency=usd&days=8&interval=daily')
     const data = response.json()
@@ -43,7 +54,6 @@ price.then(response => {
     console.log(priceValues)
     setTimeout(()=> {
         updateChart(priceValues)
-        console.log('updated')
     }, 10)
 })
 .catch(err => console.log(err))
