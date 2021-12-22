@@ -13197,7 +13197,7 @@ const ctx2 = document.querySelector('#chart2')
 
 
 async function getCoinData(coin) {
-    const response = await fetch('https://api.coingecko.com/api/v3/coins/terra-luna/market_chart?vs_currency=usd&days=1&interval=hourly')
+    const response = await fetch('https://api.coingecko.com/api/v3/coins/shiba-inu/market_chart?vs_currency=usd&days=1&interval=hourly')
     const data = response.json()
     return data
 }
@@ -13238,7 +13238,19 @@ setTimeout(()=>{
 const price = getCoinData()
 price.then(response => {
     console.log(response)
-    console.log(new Date(response.prices[3][0]).getHours())
+    const priceValues = response.prices.map(price => {
+        const numStr = String(price[1])
+        if(price[1]>=1) {
+            return Number(numStr.slice(0, numStr.indexOf('.')+3))
+        } else {
+            for(let i=0; i<numStr.length; i++) {
+                if(numStr[i] != '0' && numStr[i] != '.') {
+                    return Number(numStr.slice(0, i+4))
+                }
+            }
+        }
+    })
+    console.log(priceValues)
 })
 .catch(err => console.log(err))
 
