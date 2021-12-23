@@ -13207,6 +13207,35 @@ coinSearchInput.addEventListener('blur', ()=>{
     }, 400)
 })
 
+const sortedCoinsContainer = document.querySelector('.sorted-coins')
+const resizer = document.querySelector('.resizer')
+//When mousedown it starts resizing the divs and if it
+//goes out of it or mouseup, stops.
+resizer.addEventListener('mousedown', startResizingDivs)
+//had to do this event listener on document instead of the
+//resizer itself because when moving the mouse
+//quickly than the rendering it would stop the resizing
+//as it would get out of the resizer
+document.addEventListener('mouseup', stopResizingDivs)
+//both variables needed to calculate the heights of the divs
+let initialHeight;
+let startingPosition;
+function startResizingDivs(e) {
+    startingPosition = e.pageY
+    initialHeight = favoriteCoins.offsetHeight
+    document.addEventListener('mousemove', resizeDivs)
+}
+function resizeDivs(e) {
+    //every time a mousemove is detected, it calculates 
+    //the new heights of the divs
+    let dy = startingPosition - e.pageY
+    favoriteCoins.style.height = `${initialHeight-dy}px`
+    sortedCoinsContainer.style.height = `${596 - initialHeight +dy}px`
+}
+function stopResizingDivs() {
+    console.log('resizing')
+    document.removeEventListener('mousemove', resizeDivs)
+}
 //Array to keep the 'favorite coins' that`s necesary to keep
 //updating each coin with it's price.
 let coinsInList = []
@@ -13237,7 +13266,7 @@ async function updateListValues() {
     }
 }
 //Used to update listed coin's prices regularly
-setInterval(updateListValues, 7000)
+//setInterval(updateListValues, 7000)
 function addCointToList(coinToAdd) {
     coinsInList.push(coinToAdd.id)
     //dissapears at once to not allow multiple 'addings' to list
