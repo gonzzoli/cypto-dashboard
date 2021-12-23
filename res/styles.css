@@ -183,6 +183,12 @@ nav .links p:hover {
   padding: 2px 5px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.274);
   cursor: default;
+  -webkit-transition: .13s ease-in-out;
+  transition: .13s ease-in-out;
+}
+
+.main .coins-list .favorite-coins .coin:hover {
+  background: white;
 }
 
 .main .coins-list .favorite-coins .coin .coin-list-symbol {

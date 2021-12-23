@@ -13,24 +13,36 @@ coinSearchInput.addEventListener('blur', ()=>{
         renderSuggestions(' ')
     }, 1000)
 })
+document.body.addEventListener('click', updateListValues)
 //Array to keep the 'favorite coins' that`s necesary to keep
 //updating each coin with it's price.
-let coinsInList = ['luna']
+let coinsInList = []
+let coinsContainersInList = []
 
-function addCointToList(symbol) {
+async function updateListValues() {
+    //Format the symbols in a string to query the API and get
+    //last price of each one
+    const queryString = coinsInList.join('%2C')
+    const prices = await getLastPrice(queryString)
+    console.log(prices)
+}
+
+function addCointToList(coinToAdd) {
     //Finds the coin to get the price to set initially 
     //when rendering the element
-    console.log('edasd')
-    const data = coinsData.find(coin => coin.symbol == symbol)
+    coinsInList.push(coinToAdd.id)
+    console.log(coinsInList)
+    const data = coinsData.find(coin => coin.symbol == coinToAdd.symbol)
     const container = document.createElement('div')
     container.classList.add('coin')
     const name = document.createElement('p')
     name.classList.add('coin-list-symbol')
-    name.textContent = symbol.toUpperCase()
+    name.textContent = coinToAdd.symbol.toUpperCase()
     const price = document.createElement('p')
     price.classList.add('coin-list-price')
-    price.textContent = formatPrice(data.current_price)
+    price.textContent = data.current_price
     container.append(name, price)
+    coinsContainersInList.push(container)
     favoriteCoins.append(container)
 }
 function renderList() {
@@ -38,8 +50,9 @@ function renderList() {
 }
 
 async function getLastPrice(ids) {
-    //'terra-luna%2Cripple'
     const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`)
+    const data = await response.json()
+    return data
 }
 function renderSuggestions(searchValue) {
     //empties the previous suggestions
@@ -55,7 +68,7 @@ function renderSuggestions(searchValue) {
         addSymbol.classList.add('fas','fa-plus')
         addSymbol.title = 'Add to list.'
         //if clicked, adds the coin to the 'favorite coins'
-        addSymbol.addEventListener('click', ()=>{addCointToList(coin.symbol)})
+        addSymbol.addEventListener('click', ()=>{addCointToList(coin)})
         option.append(name,addSymbol)
         coinSearchOptions.append(option)
     })
@@ -68,10 +81,13 @@ async function getCoinsList() {
 }
 //Array to keep data about the fetched coins
 let coinsData = []
+
 //Used to update data regularly
+
 // setInterval(()=> {
 //     console.log(coinsData)
 // }, 10000)
+
 getCoinsList()
 .then(data=> {
     coinsData = data
@@ -101,17 +117,14 @@ let config = {
 
 let myChart = new Chart(ctx1, config)
 
-// For the chart to update, the parent elmeent has to be
-// resized, thats why we do this actions, we change the
-// size briefly and put it back to 50%
-
+//Gets data of a single coin
 async function getCoinData(id) {
     const response = await fetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=8&interval=daily`)
     const data = response.json()
     return data
 }
 
-
+//just to fetch data and have some initial chart drawing
 const price = getCoinData('terra-luna')
 price.then(response => {
     //console.log(response)
@@ -125,16 +138,16 @@ price.then(response => {
 
 function formatPrice(price) {
     const numStr = String(price)
-    if(price[1]>=1) {
+    //Formats the price to not add more than 2 decimal places
+    //or if its price is less than $1 it shows all the decimals
+    if(price>=1) {
         return Number(numStr.slice(0, numStr.indexOf('.')+3))
     }
-    for(let i=0; i<numStr.length; i++) {
-        if(numStr[i] != '0' && numStr[i] != '.') {
-            return Number(numStr.slice(0, i+4))
-        }
-    }
+        return Number(numStr.slice(0, i+4))
 }
-
+//Resets the data with new data and resizes for a 
+//brief time the chart container cuz i cant find
+//other way to make it re-render with new data
 function updateChart(data) {
     config.data.datasets[0].data = data
     setTimeout(()=>{
