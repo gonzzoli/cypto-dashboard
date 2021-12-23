@@ -13204,9 +13204,9 @@ coinSearchInput.addEventListener('blur', ()=>{
     setTimeout(()=> {
         coinSearchInput.value = ''
         renderSuggestions(' ')
-    }, 1000)
+    }, 400)
 })
-document.body.addEventListener('click', updateListValues)
+
 //Array to keep the 'favorite coins' that`s necesary to keep
 //updating each coin with it's price.
 let coinsInList = []
@@ -13215,16 +13215,36 @@ let coinsContainersInList = []
 async function updateListValues() {
     //Format the symbols in a string to query the API and get
     //last price of each one
+    const coinElements = Array.from(coinsContainersInList).map(coin => {
+        return Array.from(coin.children)[1]
+    })
+    console.log('updated')
     const queryString = coinsInList.join('%2C')
+    //awaits the response from querying the last prices
     const prices = await getLastPrice(queryString)
-    console.log(prices)
+    //updates the prices shown
+    for(let i=0; i<coinsInList.length; i++) {
+        //if its price went up, it will paint it green or red if went down
+        //else just come back to black
+        if(Number(coinElements[i].textContent) > prices[coinsInList[i]].usd) {
+            coinElements[i].style.color = 'red'
+            coinElements[i].textContent = prices[coinsInList[i]].usd
+        } else if(Number(coinElements[i].textContent) < prices[coinsInList[i]].usd){
+            coinElements[i].style.color = 'lightgreen'
+            coinElements[i].textContent = prices[coinsInList[i]].usd
+        } else {
+            coinElements[i].style.color = 'black'
+        }
+    }
 }
-
+setInterval(updateListValues, 25000)
 function addCointToList(coinToAdd) {
+    coinsInList.push(coinToAdd.id)
+    //dissapears at once to not allow multiple 'addings' to list
+    //of the same coin
+    coinSearchOptions.style.display = 'none'
     //Finds the coin to get the price to set initially 
     //when rendering the element
-    coinsInList.push(coinToAdd.id)
-    console.log(coinsInList)
     const data = coinsData.find(coin => coin.symbol == coinToAdd.symbol)
     const container = document.createElement('div')
     container.classList.add('coin')
@@ -13238,9 +13258,6 @@ function addCointToList(coinToAdd) {
     coinsContainersInList.push(container)
     favoriteCoins.append(container)
 }
-function renderList() {
-
-}
 
 async function getLastPrice(ids) {
     const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`)
@@ -13249,6 +13266,7 @@ async function getLastPrice(ids) {
 }
 function renderSuggestions(searchValue) {
     //empties the previous suggestions
+    coinSearchOptions.style.display = 'block'
     coinSearchOptions.innerHTML = ''
     const filteredCoins = coinsData.filter(coin => coin.symbol.includes(searchValue))
     //creates the option element
@@ -13257,6 +13275,13 @@ function renderSuggestions(searchValue) {
         option.classList.add('option')
         const name = document.createElement('p')
         name.textContent = coin.symbol
+        //If it already is in the list, do not append the add symbol
+        if(coinsInList.includes(coin.id)) {
+            option.append(name)
+            coinSearchOptions.append(option)
+            return
+        }
+        //If its not on the list, append the add symbol
         const addSymbol = document.createElement('i')
         addSymbol.classList.add('fas','fa-plus')
         addSymbol.title = 'Add to list.'
