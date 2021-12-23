@@ -40,7 +40,6 @@ function resizeDivs(e) {
     sortedCoinsContainer.style.height = `${596 - initialHeight +dy}px`
 }
 function stopResizingDivs() {
-    console.log('resizing')
     document.removeEventListener('mousemove', resizeDivs)
 }
 //Array to keep the 'favorite coins' that`s necesary to keep
@@ -73,7 +72,7 @@ async function updateListValues() {
     }
 }
 //Used to update listed coin's prices regularly
-//setInterval(updateListValues, 7000)
+setInterval(updateListValues, 7000)
 function addCointToList(coinToAdd) {
     coinsInList.push(coinToAdd.id)
     //dissapears at once to not allow multiple 'addings' to list
@@ -122,7 +121,6 @@ function removeCoinFromList(coinToRemove) {
     coinsContainersInList[index].remove()
     coinsContainersInList.splice(index,1)
 }
-
 async function getLastPrice(ids) {
     const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`)
     const data = await response.json()
@@ -159,8 +157,82 @@ function renderSuggestions(searchValue) {
 //WILL LIST COINS WITH MOST PERCENTAGE CHANGE IN
 //24HS BOTH UP OR DOWN IF THE 'Losers' OPTION IS SELECTED
 //ALSO INCLUDE 'Volume' OPTION. THE ONES WITH MOST VOLUME
-
-
+//it starts with winners selected, so we render them initially
+//renderWinners()
+const sortSelect = document.querySelector('.sort-selection')
+const sortedCoinsListElement = document.querySelector('.sorted-coins-list')
+sortSelect.addEventListener('click', changeSort)
+let selectedSort = 0
+const sortOptions = ['Winners', 'Losers', 'Volume']
+const title = sortSelect.firstElementChild
+let sortedCoinsArray = []
+function changeSort() {
+    sortedCoinsListElement.innerHTML = ''
+    //switches between sort options
+    switch (selectedSort) {
+        case 0:
+            selectedSort = 1
+            renderLosers()
+            break;
+        case 1:
+            selectedSort = 2
+            renderByVolume()
+            break;
+        case 2:
+            selectedSort = 0
+            renderWinners()
+            break;
+    
+        default:
+            break;
+    }
+    title.textContent = sortOptions[selectedSort]
+}
+function renderSortedCoin(coin) {
+    //creates the html element for a coin
+    const container = document.createElement('div')
+    container.classList.add('coin')
+    const name = document.createElement('p')
+    name.classList.add('coin-list-symbol')
+    name.textContent = coin.symbol.toUpperCase()
+    const price = document.createElement('p')
+    price.classList.add('coin-list-price')
+    //it will show the change_percentage_24h anwyways
+    //only with different color wether positive or negative
+    if(selectedSort==0 || selectedSort==1) {
+        price.textContent = formatPrice(coin.price_change_percentage_24h) + '%'
+        if(coin.price_change_percentage_24h>0) price.style.color = '#7BC312'
+        if(coin.price_change_percentage_24h<0) price.style.color = 'red'
+    }
+    //shows the volume instead
+    if(selectedSort==2) {
+        price.textContent = formatVolume(coin.total_volume)
+        price.style.color = 'black'
+    }
+    container.append(name, price)
+    sortedCoinsArray.push(container)
+    //Function to open options list when clicked on the coin
+    //or closed when mouseout
+    sortedCoinsListElement.append(container)
+}
+function renderWinners() {
+    console.log('rendering winnerw')
+    const sortedData = coinsData.sort((a,b) => b.price_change_percentage_24h - a.price_change_percentage_24h)
+    .slice(0, 10)
+    sortedData.forEach(coin => renderSortedCoin(coin))
+}
+function renderLosers() {
+    console.log('rendering losers')
+    const sortedData = coinsData.sort((a,b) => a.price_change_percentage_24h - b.price_change_percentage_24h)
+    .slice(0, 10)
+    sortedData.forEach(coin => renderSortedCoin(coin))
+}
+function renderByVolume() {
+    console.log('rendering volume')
+    const sortedData = coinsData.sort((a,b) => b.total_volume - a.total_volume)
+    .slice(0, 10)
+    sortedData.forEach(coin => renderSortedCoin(coin))
+}
 
 //fetches the main 250 coins from the CoinGecko API
 async function getCoinsList() {
@@ -170,8 +242,6 @@ async function getCoinsList() {
 }
 //Array to keep data about the fetched coins
 let coinsData = []
-
-
 getCoinsList()
 .then(data=> {
     coinsData = data
@@ -224,10 +294,20 @@ function formatPrice(price) {
     const numStr = String(price)
     //Formats the price to not add more than 2 decimal places
     //or if its price is less than $1 it shows all the decimals
+    const pointIndex = numStr.indexOf('.')
     if(price>=1) {
-        return Number(numStr.slice(0, numStr.indexOf('.')+3))
+        return Number(numStr.slice(0, pointIndex+3))
     }
-        return Number(numStr.slice(0, i+4))
+        return Number(numStr.slice(0, pointIndex+3))
+}
+function formatVolume(num) {
+    let invertedStr = String(num).split('').reverse()
+    for(let i=0; i<invertedStr.length; i++) {
+        if(i%3==0 && i!=0) {
+            invertedStr.splice(i,0,'.')
+        }
+    }
+    return invertedStr.reverse().join('')
 }
 //Resets the data with new data and resizes for a 
 //brief time the chart container cuz i cant find

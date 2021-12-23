@@ -179,7 +179,54 @@ nav .links p:hover {
   height: 50%;
 }
 
-.main .coins-list .favorite-coins .coin {
+.main .coins-list .favorite-coins .coin-options {
+  position: absolute;
+  z-index: 2;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid rgba(128, 128, 128, 0.438);
+  border-radius: 10px;
+  -webkit-transition: .1s ease-in-out;
+  transition: .1s ease-in-out;
+  display: none;
+}
+
+.main .coins-list .favorite-coins .coin-options p {
+  padding: 2px;
+  font-size: 1rem;
+  -webkit-transition: .1s ease-in-out;
+  transition: .1s ease-in-out;
+}
+
+.main .coins-list .favorite-coins .coin-options p:hover {
+  background: whitesmoke;
+}
+
+.main .coins-list .favorite-coins .show-options {
+  display: block;
+}
+
+.main .resizer {
+  height: 3px;
+  width: 100%;
+  background: #918e8e;
+  cursor: n-resize;
+}
+
+.main .sorted-coins {
+  height: 50%;
+  max-width: 130px;
+  overflow-y: auto;
+}
+
+.main .sorted-coins .sort-selection {
+  text-align: center;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+.main .coin {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -201,65 +248,18 @@ nav .links p:hover {
           user-select: none;
 }
 
-.main .coins-list .favorite-coins .coin:hover {
+.main .coin:hover {
   background: white;
 }
 
-.main .coins-list .favorite-coins .coin .coin-list-symbol {
-  font-size: 1rem;
+.main .coin .coin-list-symbol {
+  font-size: .9rem;
 }
 
-.main .coins-list .favorite-coins .coin .coin-list-price {
+.main .coin .coin-list-price {
   font-size: .8rem;
   margin-right: 8px;
   -webkit-transition: .2s ease-in-out;
   transition: .2s ease-in-out;
-}
-
-.main .coins-list .favorite-coins .coin .coin-options {
-  position: absolute;
-  z-index: 2;
-  top: 100%;
-  left: 0;
-  background: white;
-  border: 1px solid rgba(128, 128, 128, 0.438);
-  border-radius: 10px;
-  -webkit-transition: .1s ease-in-out;
-  transition: .1s ease-in-out;
-  display: none;
-}
-
-.main .coins-list .favorite-coins .coin .coin-options p {
-  padding: 2px;
-  font-size: 1rem;
-  -webkit-transition: .1s ease-in-out;
-  transition: .1s ease-in-out;
-}
-
-.main .coins-list .favorite-coins .coin .coin-options p:hover {
-  background: whitesmoke;
-}
-
-.main .coins-list .favorite-coins .coin .show-options {
-  display: block;
-}
-
-.main .coins-list .resizer {
-  height: 3px;
-  width: 100%;
-  background: #918e8e;
-  cursor: n-resize;
-}
-
-.main .coins-list .sorted-coins {
-  height: 50%;
-  max-width: 130px;
-  overflow-y: auto;
-}
-
-.main .coins-list .sorted-coins .sort-selection {
-  text-align: center;
-  margin-top: 5px;
-  cursor: pointer;
 }
 /*# sourceMappingURL=styles.css.map */
