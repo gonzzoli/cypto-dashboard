@@ -122,6 +122,7 @@ nav .links p:hover {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
+  border-left: 1px solid black;
 }
 
 .main .coins-list .search-coins {
@@ -133,6 +134,7 @@ nav .links p:hover {
 
 .main .coins-list .search-coins .options {
   position: absolute;
+  z-index: 3;
   left: -10px;
   width: 100%;
   background: white;
@@ -187,8 +189,7 @@ nav .links p:hover {
   -webkit-box-flex: 1;
       -ms-flex-positive: 1;
           flex-grow: 1;
-  overflow-y: scroll;
-  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .main .coins-list .favorite-coins .coin {
@@ -203,9 +204,14 @@ nav .links p:hover {
           justify-content: space-between;
   padding: 2px 5px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.274);
+  position: relative;
   cursor: default;
   -webkit-transition: .13s ease-in-out;
   transition: .13s ease-in-out;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }
 
 .main .coins-list .favorite-coins .coin:hover {
@@ -221,5 +227,33 @@ nav .links p:hover {
   margin-right: 8px;
   -webkit-transition: .2s ease-in-out;
   transition: .2s ease-in-out;
+}
+
+.main .coins-list .favorite-coins .coin .coin-options {
+  position: absolute;
+  z-index: 2;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid rgba(128, 128, 128, 0.438);
+  border-radius: 10px;
+  -webkit-transition: .1s ease-in-out;
+  transition: .1s ease-in-out;
+  display: none;
+}
+
+.main .coins-list .favorite-coins .coin .coin-options p {
+  padding: 2px;
+  font-size: 1rem;
+  -webkit-transition: .1s ease-in-out;
+  transition: .1s ease-in-out;
+}
+
+.main .coins-list .favorite-coins .coin .coin-options p:hover {
+  background: whitesmoke;
+}
+
+.main .coins-list .favorite-coins .coin .show-options {
+  display: block;
 }
 /*# sourceMappingURL=styles.css.map */

@@ -13218,7 +13218,6 @@ async function updateListValues() {
     const coinElements = Array.from(coinsContainersInList).map(coin => {
         return Array.from(coin.children)[1]
     })
-    console.log('updated')
     const queryString = coinsInList.join('%2C')
     //awaits the response from querying the last prices
     const prices = await getLastPrice(queryString)
@@ -13230,14 +13229,15 @@ async function updateListValues() {
             coinElements[i].style.color = 'red'
             coinElements[i].textContent = prices[coinsInList[i]].usd
         } else if(Number(coinElements[i].textContent) < prices[coinsInList[i]].usd){
-            coinElements[i].style.color = 'lightgreen'
+            coinElements[i].style.color = '#40E11C'
             coinElements[i].textContent = prices[coinsInList[i]].usd
         } else {
             coinElements[i].style.color = 'black'
         }
     }
 }
-setInterval(updateListValues, 25000)
+//Used to update listed coin's prices regularly
+setInterval(updateListValues, 7000)
 function addCointToList(coinToAdd) {
     coinsInList.push(coinToAdd.id)
     //dissapears at once to not allow multiple 'addings' to list
@@ -13254,9 +13254,37 @@ function addCointToList(coinToAdd) {
     const price = document.createElement('p')
     price.classList.add('coin-list-price')
     price.textContent = data.current_price
-    container.append(name, price)
+    const options = document.createElement('div')
+    options.classList.add('coin-options')
+    const remove = document.createElement('p')
+    remove.textContent = 'Delete'
+    //Function to remove the coin from the list
+    remove.addEventListener('click', ()=>{removeCoinFromList(coinToAdd)})
+    const toChart1 = document.createElement('p')
+    toChart1.textContent = 'To Chart 1'
+    const toChart2 = document.createElement('p')
+    toChart2.textContent = 'To Chart 2'
+    options.append(remove, toChart1, toChart2)
+    container.append(name, price, options)
     coinsContainersInList.push(container)
+    //Function to open options list when clicked on the coin
+    //or closed when mouseout
+    container.addEventListener('click', toggleOptions)
+    options.addEventListener('mouseout', toggleOptions)
     favoriteCoins.append(container)
+    function toggleOptions() {
+        options.classList.toggle('show-options')
+    }
+}
+//Function to remove the coin from the list
+function removeCoinFromList(coinToRemove) {
+    let index = coinsInList.findIndex(coin =>{
+        return coin == coinToRemove.id
+    })
+    //Remove the coin from the list and the display
+    coinsInList.splice(index, 1)
+    coinsContainersInList[index].remove()
+    coinsContainersInList.splice(index,1)
 }
 
 async function getLastPrice(ids) {
@@ -13268,13 +13296,13 @@ function renderSuggestions(searchValue) {
     //empties the previous suggestions
     coinSearchOptions.style.display = 'block'
     coinSearchOptions.innerHTML = ''
-    const filteredCoins = coinsData.filter(coin => coin.symbol.includes(searchValue))
+    const filteredCoins = coinsData.filter(coin => coin.symbol.toLowerCase().includes(searchValue.toLowerCase()))
     //creates the option element
     filteredCoins.forEach(coin => {
         const option = document.createElement('div')
         option.classList.add('option')
         const name = document.createElement('p')
-        name.textContent = coin.symbol
+        name.textContent = coin.symbol.toLowerCase()
         //If it already is in the list, do not append the add symbol
         if(coinsInList.includes(coin.id)) {
             option.append(name)
@@ -13291,6 +13319,13 @@ function renderSuggestions(searchValue) {
         coinSearchOptions.append(option)
     })
 }
+//SECTION TO WRITE CODE ABOUT THE 'Winners' SECTION
+//WILL LIST COINS WITH MOST PERCENTAGE CHANGE IN
+//24HS BOTH UP OR DOWN IF THE 'Losers' OPTION IS SELECTED
+//ALSO INCLUDE 'Volume' OPTION. THE ONES WITH MOST VOLUME
+
+
+
 //fetches the main 250 coins from the CoinGecko API
 async function getCoinsList() {
     const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=false')
@@ -13300,11 +13335,6 @@ async function getCoinsList() {
 //Array to keep data about the fetched coins
 let coinsData = []
 
-//Used to update data regularly
-
-// setInterval(()=> {
-//     console.log(coinsData)
-// }, 10000)
 
 getCoinsList()
 .then(data=> {
