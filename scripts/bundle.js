@@ -13191,7 +13191,6 @@ return Chart;
 })));
 
 },{}],2:[function(require,module,exports){
-const ctx1Cont = document.querySelector('.chart1-container')
 const ctx1 = document.querySelector('#chart1')
 const ctx2 = document.querySelector('#chart2')
 const favoriteCoins = document.querySelector('.favorite-coins')
@@ -13200,6 +13199,8 @@ const coinSearchOptions = document.querySelector('.options')
 //Renders suggestions each time the input changes
 coinSearchInput.addEventListener('input', ()=>{renderSuggestions(coinSearchInput.value)})
 //Makes the suggestions dissapear when clicking outside the input
+//A brief timeout because when pressing on the + to add a coin
+//it may dissapear first, without adding the coin.
 coinSearchInput.addEventListener('blur', ()=>{
     setTimeout(()=> {
         coinSearchInput.value = ''
@@ -13208,10 +13209,10 @@ coinSearchInput.addEventListener('blur', ()=>{
 })
 
 const sortedCoinsContainer = document.querySelector('.sorted-coins')
-const resizer = document.querySelector('.resizer')
+const listResizer = document.querySelector('.list-resizer')
 //When mousedown it starts resizing the divs and if it
 //goes out of it or mouseup, stops.
-resizer.addEventListener('mousedown', startResizingDivs)
+listResizer.addEventListener('mousedown', startResizingDivs)
 //had to do this event listener on document instead of the
 //resizer itself because when moving the mouse
 //quickly than the rendering it would stop the resizing
@@ -13224,6 +13225,7 @@ function startResizingDivs(e) {
     startingPosition = e.pageY
     initialHeight = favoriteCoins.offsetHeight
     document.addEventListener('mousemove', resizeDivs)
+    listResizer.style.background = '#F1D181'
 }
 function resizeDivs(e) {
     //every time a mousemove is detected, it calculates 
@@ -13234,6 +13236,7 @@ function resizeDivs(e) {
 }
 function stopResizingDivs() {
     document.removeEventListener('mousemove', resizeDivs)
+    listResizer.style.background = '#918e8e'
 }
 //Array to keep the 'favorite coins' that`s necesary to keep
 //updating each coin with it's price.
@@ -13265,7 +13268,16 @@ async function updateListValues() {
     }
 }
 //Used to update listed coin's prices regularly
-setInterval(updateListValues, 7000)
+//setInterval(updateListValues, 7000)
+setInterval(() => {
+    updateListValues()
+    getCoinsList()
+    .then(data => {
+        coinsData = data
+        updateSortedCoins()
+    })
+    .catch(err => console.log(err))
+}, 7000)
 function addCointToList(coinToAdd) {
     coinsInList.push(coinToAdd.id)
     //dissapears at once to not allow multiple 'addings' to list
@@ -13290,8 +13302,10 @@ function addCointToList(coinToAdd) {
     remove.addEventListener('click', ()=>{removeCoinFromList(coinToAdd)})
     const toChart1 = document.createElement('p')
     toChart1.textContent = 'To Chart 1'
+    toChart1.addEventListener('click', ()=>{showInChart(coinToAdd, 1)})
     const toChart2 = document.createElement('p')
     toChart2.textContent = 'To Chart 2'
+    toChart2.addEventListener('click', ()=>{showInChart(coinToAdd, 2)})
     options.append(remove, toChart1, toChart2)
     container.append(name, price, options)
     coinsContainersInList.push(container)
@@ -13346,21 +13360,25 @@ function renderSuggestions(searchValue) {
         coinSearchOptions.append(option)
     })
 }
+
 //SECTION TO WRITE CODE ABOUT THE 'Winners' SECTION
 //WILL LIST COINS WITH MOST PERCENTAGE CHANGE IN
 //24HS BOTH UP OR DOWN IF THE 'Losers' OPTION IS SELECTED
 //ALSO INCLUDE 'Volume' OPTION. THE ONES WITH MOST VOLUME
 //it starts with winners selected, so we render them initially
-//renderWinners()
+
 const sortSelect = document.querySelector('.sort-selection')
 const sortedCoinsListElement = document.querySelector('.sorted-coins-list')
 sortSelect.addEventListener('click', changeSort)
 let selectedSort = 0
 const sortOptions = ['Winners', 'Losers', 'Volume']
 const title = sortSelect.firstElementChild
+//contains the elements of the sorted coins
 let sortedCoinsArray = []
+
 function changeSort() {
     sortedCoinsListElement.innerHTML = ''
+    sortedCoinsArray = []
     //switches between sort options
     switch (selectedSort) {
         case 0:
@@ -13380,6 +13398,8 @@ function changeSort() {
             break;
     }
     title.textContent = sortOptions[selectedSort]
+    console.log(sortedCoinsArray)
+    updateSortedCoins()
 }
 function renderSortedCoin(coin) {
     //creates the html element for a coin
@@ -13390,6 +13410,15 @@ function renderSortedCoin(coin) {
     name.textContent = coin.symbol.toUpperCase()
     const price = document.createElement('p')
     price.classList.add('coin-list-price')
+    const options = document.createElement('div')
+    options.classList.add('coin-options')
+    const toChart1 = document.createElement('p')
+    toChart1.textContent = 'To Chart 1'
+    toChart1.addEventListener('click', ()=>{showInChart(coin, 1)})
+    const toChart2 = document.createElement('p')
+    toChart2.textContent = 'To Chart 2'
+    toChart2.addEventListener('click', ()=>{showInChart(coin, 2)})
+    options.append(toChart1, toChart2)
     //it will show the change_percentage_24h anwyways
     //only with different color wether positive or negative
     if(selectedSort==0 || selectedSort==1) {
@@ -13399,32 +13428,52 @@ function renderSortedCoin(coin) {
     }
     //shows the volume instead
     if(selectedSort==2) {
-        price.textContent = formatVolume(coin.total_volume)
+        //uses toLocaleString to format the number
+        price.textContent = coin.total_volume.toLocaleString()
         price.style.color = 'black'
     }
-    container.append(name, price)
+    container.append(name, price, options)
     sortedCoinsArray.push(container)
     //Function to open options list when clicked on the coin
     //or closed when mouseout
     sortedCoinsListElement.append(container)
+    container.addEventListener('click', toggleOptions)
+    options.addEventListener('mouseout', toggleOptions)
+    function toggleOptions() {
+        options.classList.toggle('show-options')
+    }
 }
 function renderWinners() {
-    console.log('rendering winnerw')
     const sortedData = coinsData.sort((a,b) => b.price_change_percentage_24h - a.price_change_percentage_24h)
-    .slice(0, 10)
+    .slice(0, 20)
     sortedData.forEach(coin => renderSortedCoin(coin))
 }
 function renderLosers() {
-    console.log('rendering losers')
     const sortedData = coinsData.sort((a,b) => a.price_change_percentage_24h - b.price_change_percentage_24h)
-    .slice(0, 10)
+    .slice(0, 20)
     sortedData.forEach(coin => renderSortedCoin(coin))
 }
 function renderByVolume() {
-    console.log('rendering volume')
     const sortedData = coinsData.sort((a,b) => b.total_volume - a.total_volume)
-    .slice(0, 10)
+    .slice(0, 20)
     sortedData.forEach(coin => renderSortedCoin(coin))
+}
+function updateSortedCoins() {
+    if(selectedSort==0) {
+        sortedCoinsListElement.innerHTML = ''
+        sortedCoinsArray = []
+        renderWinners()
+    }
+    if(selectedSort==1) {
+        sortedCoinsListElement.innerHTML = ''
+        sortedCoinsArray = []
+        renderLosers()
+    }
+    if(selectedSort==2) {
+        sortedCoinsListElement.innerHTML = ''
+        sortedCoinsArray = []
+        renderByVolume()
+    }
 }
 
 //fetches the main 250 coins from the CoinGecko API
@@ -13439,17 +13488,52 @@ getCoinsList()
 .then(data=> {
     coinsData = data
     console.log(data)
+    //calls it here as it needs the coinsData
+    //and must be called on page load
+    renderWinners()
 })
 .catch(err => console.log(err))
 
 const Chart = require('chart.js')
 
+function showInChart(coin, chartNum) {
+    //console.log(coin, chartNum)
+    const action = getCoinData(coin.id)
+    .then(response => {
+        console.log(response)
+        const symbol = coin.symbol.toUpperCase()
+        const priceValues = response.prices.map(price => formatPrice(price[1]))
+        const dateValues = response.prices.map(price => {
+            const coso = new Date(price[0])
+            const day = coso.getDate().toLocaleString('en-US', {
+                minimumIntegerDigits: 2,
+                useGrouping: false
+            })
+            const month = coso.getMonth()
+            return `${day}/${month}`
+        })
+        const data = {symbol, priceValues, dateValues}
+        setTimeout(()=> {
+            updateChart(data)
+        }, 10)
+    })
+    .catch(err => console.log(err))
+}
+//Resets the data with the coin passed to show
+function updateChart(data) {
+    config.data.datasets[0].data = data.priceValues
+    config.data.labels = data.dateValues
+    config.data.datasets[0].label = data.symbol
+    chart1.update()
+}
 let labels = ['2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019']
 let data = {
     labels,
     datasets: [{
         data: [211,326,165,350,420,370,500,375,415],
-        label: 'Sales of this year erasasa'
+        label: 'Sales of this year erasasa',
+        borderColor: '#E59008',
+        backgroundColor: '#E59008'
         },
     ],
 }
@@ -13458,11 +13542,23 @@ let config = {
     type: 'line',
     data: data,
     options: {
-        responsive: true
+        responsive: true,
+        scales: {
+            x: {
+                //not sure how all works but it modifies
+                //the timestamps displayed on x axis
+                ticks: {
+                    callback: function(val, index) {
+                        return index % /*2*/ 1 == 0 ? this.getLabelForValue(val) : ''
+                    }
+                }
+            }
+        }
     }
 }
 
-let myChart = new Chart(ctx1, config)
+let chart1 = new Chart(ctx1, config)
+let chart2 = new Chart(ctx2, config)
 
 //Gets data of a single coin
 async function getCoinData(id) {
@@ -13470,18 +13566,6 @@ async function getCoinData(id) {
     const data = response.json()
     return data
 }
-
-//just to fetch data and have some initial chart drawing
-const price = getCoinData('terra-luna')
-price.then(response => {
-    //console.log(response)
-    const priceValues = response.prices.map(price => formatPrice(price[1]))
-    console.log(priceValues)
-    setTimeout(()=> {
-        updateChart(priceValues)
-    }, 10)
-})
-.catch(err => console.log(err))
 
 function formatPrice(price) {
     const numStr = String(price)
@@ -13492,27 +13576,6 @@ function formatPrice(price) {
         return Number(numStr.slice(0, pointIndex+3))
     }
         return Number(numStr.slice(0, pointIndex+3))
-}
-function formatVolume(num) {
-    let invertedStr = String(num).split('').reverse()
-    for(let i=0; i<invertedStr.length; i++) {
-        if(i%3==0 && i!=0) {
-            invertedStr.splice(i,0,'.')
-        }
-    }
-    return invertedStr.reverse().join('')
-}
-//Resets the data with new data and resizes for a 
-//brief time the chart container cuz i cant find
-//other way to make it re-render with new data
-function updateChart(data) {
-    config.data.datasets[0].data = data
-    setTimeout(()=>{
-        ctx1Cont.style.border = '2px solid black'
-        setTimeout(()=>{
-            ctx1Cont.style.border = 'none'
-        },5)
-    }, 5)
 }
 
 function formatDate() {

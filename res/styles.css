@@ -6,12 +6,12 @@
 }
 
 body {
-  font-family: 'Poppins';
+  font-family: "Poppins";
 }
 
 nav {
   height: 50px;
-  background: #FBF68A;
+  background: #fbf68a;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -51,8 +51,8 @@ nav .links p {
   padding: 5px;
   font-size: 1.2rem;
   cursor: pointer;
-  -webkit-transition: .2s ease-in-out;
-  transition: .2s ease-in-out;
+  -webkit-transition: 0.2s ease-in-out;
+  transition: 0.2s ease-in-out;
 }
 
 nav .links p:hover {
@@ -127,13 +127,13 @@ nav .links p:hover {
   left: -10px;
   width: 100%;
   background: white;
-  -webkit-transition: .2s ease-in-out;
-  transition: .2s ease-in-out;
+  -webkit-transition: 0.2s ease-in-out;
+  transition: 0.2s ease-in-out;
   overflow: hidden;
 }
 
 .main .coins-list .search-coins .options .option {
-  font-size: .9rem;
+  font-size: 0.9rem;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -144,8 +144,8 @@ nav .links p:hover {
       -ms-flex-align: center;
           align-items: center;
   padding: 7px;
-  -webkit-transition: .1s ease-in-out;
-  transition: .1s ease-in-out;
+  -webkit-transition: 0.1s ease-in-out;
+  transition: 0.1s ease-in-out;
 }
 
 .main .coins-list .search-coins .options .option p {
@@ -165,8 +165,8 @@ nav .links p:hover {
   height: 25px;
   border: none;
   border-bottom: 1px dotted black;
-  -webkit-transition: .08s ease-in-out;
-  transition: .08s ease-in-out;
+  -webkit-transition: 0.08s ease-in-out;
+  transition: 0.08s ease-in-out;
 }
 
 .main .coins-list .search-coins input:focus {
@@ -179,45 +179,24 @@ nav .links p:hover {
   height: 50%;
 }
 
-.main .coins-list .favorite-coins .coin-options {
-  position: absolute;
-  z-index: 2;
-  top: 100%;
-  left: 0;
-  background: white;
-  border: 1px solid rgba(128, 128, 128, 0.438);
-  border-radius: 10px;
-  -webkit-transition: .1s ease-in-out;
-  transition: .1s ease-in-out;
-  display: none;
-}
-
-.main .coins-list .favorite-coins .coin-options p {
-  padding: 2px;
-  font-size: 1rem;
-  -webkit-transition: .1s ease-in-out;
-  transition: .1s ease-in-out;
-}
-
-.main .coins-list .favorite-coins .coin-options p:hover {
-  background: whitesmoke;
-}
-
 .main .coins-list .favorite-coins .show-options {
   display: block;
 }
 
-.main .resizer {
-  height: 3px;
+.main .list-resizer {
+  height: 4px;
   width: 100%;
   background: #918e8e;
   cursor: n-resize;
+  -webkit-transition: 0.15s ease-in-out;
+  transition: 0.15s ease-in-out;
 }
 
 .main .sorted-coins {
   height: 50%;
   max-width: 130px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .main .sorted-coins .sort-selection {
@@ -240,8 +219,8 @@ nav .links p:hover {
   border-bottom: 1px solid rgba(0, 0, 0, 0.274);
   position: relative;
   cursor: default;
-  -webkit-transition: .13s ease-in-out;
-  transition: .13s ease-in-out;
+  -webkit-transition: 0.13s ease-in-out;
+  transition: 0.13s ease-in-out;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
@@ -253,13 +232,41 @@ nav .links p:hover {
 }
 
 .main .coin .coin-list-symbol {
-  font-size: .9rem;
+  font-size: 0.9rem;
 }
 
 .main .coin .coin-list-price {
-  font-size: .8rem;
+  font-size: 0.8rem;
   margin-right: 8px;
-  -webkit-transition: .2s ease-in-out;
-  transition: .2s ease-in-out;
+  -webkit-transition: 0.2s ease-in-out;
+  transition: 0.2s ease-in-out;
+}
+
+.main .coin .coin-options {
+  position: absolute;
+  z-index: 2;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid rgba(128, 128, 128, 0.438);
+  border-radius: 10px;
+  -webkit-transition: 0.1s ease-in-out;
+  transition: 0.1s ease-in-out;
+  display: none;
+}
+
+.main .coin .coin-options p {
+  padding: 2px;
+  font-size: 1rem;
+  -webkit-transition: 0.1s ease-in-out;
+  transition: 0.1s ease-in-out;
+}
+
+.main .coin .coin-options p:hover {
+  background: whitesmoke;
+}
+
+.main .coin .show-options {
+  display: block;
 }
 /*# sourceMappingURL=styles.css.map */
