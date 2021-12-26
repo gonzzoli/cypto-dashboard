@@ -88,13 +88,41 @@ nav .links p:hover {
           flex-grow: 10;
 }
 
+.main .charts > div {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.main .charts > div .time-options {
+  width: 10%;
+}
+
+.main .charts > div .time-options .time-option {
+  padding: 3px;
+  cursor: pointer;
+  -webkit-transition: .15s ease-in-out;
+  transition: .15s ease-in-out;
+}
+
+.main .charts > div .time-options .time-option:hover {
+  background: white;
+}
+
+.main .charts > div .time-options .time-option:hover.selected-time {
+  background: yellow;
+}
+
 .main .charts .chart1-container {
-  width: 100%;
+  width: 90%;
   height: 50%;
 }
 
 .main .charts .chart2-container {
-  width: 100%;
+  width: 90%;
   height: 50%;
 }
 

@@ -13422,7 +13422,6 @@ function changeSort() {
             break;
     }
     title.textContent = sortOptions[selectedSort]
-    console.log(sortedCoinsArray)
     updateSortedCoins()
 }
 function renderSortedCoin(coin) {
@@ -13511,7 +13510,6 @@ let coinsData = []
 getCoinsList()
 .then(data=> {
     coinsData = data
-    console.log(data)
     //calls it here as it needs the coinsData
     //and must be called on page load
     renderWinners()
@@ -13519,10 +13517,15 @@ getCoinsList()
 .catch(err => console.log(err))
 
 const Chart = require('chart.js')
-
-function showInChart(coin, chartNum) {
-    //console.log(coin, chartNum)
-    const action = getCoinData(coin.id)
+//Variables needed to update the chart when changing the
+//time interval 'hourly, daily, weekly', to know which coin 
+//was in the chart to render it again with new info
+let coinIdChart1;
+let coinIdChart2;
+function showInChart(coin, chartNum, days=1, interval='hourly') {
+    if(chartNum==1) coinIdChart1 = coin.id
+    if(chartNum==2) coinIdChart2 = coin.id
+    const action = getCoinData(coin.id, days, interval)
     .then(response => {
         console.log(response)
         const symbol = coin.symbol.toUpperCase()
@@ -13554,7 +13557,6 @@ function updateChart(data, chartNum) {
         configC2.data.datasets[0].label = data.symbol
         chart2.update()
     }
-    
 }
 let labelsC1 = ['2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019']
 let dataC1 = {
@@ -13621,10 +13623,41 @@ let chart1 = new Chart(ctx1, configC1)
 let chart2 = new Chart(ctx2, configC2)
 
 //Gets data of a single coin
-async function getCoinData(id) {
-    const response = await fetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=8&interval=daily`)
+async function getCoinData(id, days, interval) {
+    const response = await fetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=${days}&interval=${interval}`)
     const data = response.json()
     return data
+}
+const intervalsC1 = document.querySelector('#options-chart1')
+const intervalsC2 = document.querySelector('#options-chart2')
+intervalsC1.addEventListener('click', changeIntervalC1)
+intervalsC2.addEventListener('click', changeIntervalC2)
+
+function changeIntervalC1(e) {
+    const coin = coinsData.find(coin => coin.id == coinIdChart1)
+    let interval = e.target.id
+    let days;
+    if(interval=='hourly') days = 1
+    if(interval=='daily') days = 30
+    if(interval=='weekly') {
+        days = 88
+        interval = 'daily'
+    }
+    showInChart(coin, 1, days, interval)
+
+}
+function changeIntervalC2(e) {
+    const coin = coinsData.find(coin => coin.id == coinIdChart2)
+    let interval = e.target.id
+    let days;
+    if(interval=='hourly') days = 1
+    if(interval=='daily') days = 30
+    if(interval=='weekly') {
+        days = 88
+        interval = 'daily'
+    }
+    showInChart(coin, 2, days, interval)
+
 }
 
 function formatPrice(price) {
