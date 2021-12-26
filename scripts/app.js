@@ -14,7 +14,27 @@ coinSearchInput.addEventListener('blur', ()=>{
         renderSuggestions(' ')
     }, 400)
 })
+//Following code is to resize the main section between
+//the charts and the coins listed on the side
+let initialWidth;
+let totalWidth;
+const mainResizer = document.querySelector('.main-resizer')
+const chartsContainer = document.querySelector('.charts')
+const coinsListContainer = document.querySelector('.coins-list')
+mainResizer.addEventListener('mousedown', startResizingMain)
 
+function startResizingMain(e) {
+    startingPosition = e.clientX
+    initialWidth = chartsContainer.offsetWidth
+    totalWidth = chartsContainer.offsetWidth + coinsListContainer.offsetWidth
+    document.addEventListener('mousemove', resizeMain)
+    mainResizer.style.background = '#F1D181'
+}
+function resizeMain(e) {
+    let dx = startingPosition - e.clientX
+    chartsContainer.style.width = `${initialWidth-dx}px`
+    coinsListContainer.style.width = `${totalWidth - initialWidth + dx}px`
+}
 const sortedCoinsContainer = document.querySelector('.sorted-coins')
 const listResizer = document.querySelector('.list-resizer')
 //When mousedown it starts resizing the divs and if it
@@ -24,13 +44,15 @@ listResizer.addEventListener('mousedown', startResizingDivs)
 //resizer itself because when moving the mouse
 //quickly than the rendering it would stop the resizing
 //as it would get out of the resizer
-document.addEventListener('mouseup', stopResizingDivs)
+document.addEventListener('mouseup', stopResizingAll)
 //both variables needed to calculate the heights of the divs
 let initialHeight;
 let startingPosition;
+let totalHeight;
 function startResizingDivs(e) {
     startingPosition = e.pageY
     initialHeight = favoriteCoins.offsetHeight
+    totalHeight = favoriteCoins.offsetHeight + sortedCoinsContainer.offsetHeight
     document.addEventListener('mousemove', resizeDivs)
     listResizer.style.background = '#F1D181'
 }
@@ -39,11 +61,13 @@ function resizeDivs(e) {
     //the new heights of the divs
     let dy = startingPosition - e.pageY
     favoriteCoins.style.height = `${initialHeight-dy}px`
-    sortedCoinsContainer.style.height = `${596 - initialHeight +dy}px`
+    sortedCoinsContainer.style.height = `${totalHeight - initialHeight +dy}px`
 }
-function stopResizingDivs() {
+function stopResizingAll() {
     document.removeEventListener('mousemove', resizeDivs)
+    document.removeEventListener('mousemove', resizeMain)
     listResizer.style.background = '#918e8e'
+    mainResizer.style.background = '#918e8e'
 }
 //Array to keep the 'favorite coins' that`s necesary to keep
 //updating each coin with it's price.
@@ -320,22 +344,28 @@ function showInChart(coin, chartNum) {
             return `${day}/${month}`
         })
         const data = {symbol, priceValues, dateValues}
-        setTimeout(()=> {
-            updateChart(data)
-        }, 10)
+        updateChart(data, chartNum)
     })
     .catch(err => console.log(err))
 }
 //Resets the data with the coin passed to show
-function updateChart(data) {
-    config.data.datasets[0].data = data.priceValues
-    config.data.labels = data.dateValues
-    config.data.datasets[0].label = data.symbol
-    chart1.update()
+function updateChart(data, chartNum) {
+    if(chartNum==1) {
+        configC1.data.datasets[0].data = data.priceValues
+        configC1.data.labels = data.dateValues
+        configC1.data.datasets[0].label = data.symbol
+        chart1.update()
+    } else if(chartNum==2) {
+        configC2.data.datasets[0].data = data.priceValues
+        configC2.data.labels = data.dateValues
+        configC2.data.datasets[0].label = data.symbol
+        chart2.update()
+    }
+    
 }
-let labels = ['2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019']
-let data = {
-    labels,
+let labelsC1 = ['2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019']
+let dataC1 = {
+    labels:labelsC1,
     datasets: [{
         data: [211,326,165,350,420,370,500,375,415],
         label: 'Sales of this year erasasa',
@@ -345,9 +375,39 @@ let data = {
     ],
 }
 
-let config = {
+let configC1 = {
     type: 'line',
-    data: data,
+    data: dataC1,
+    options: {
+        responsive: true,
+        scales: {
+            x: {
+                //not sure how all works but it modifies
+                //the timestamps displayed on x axis
+                ticks: {
+                    callback: function(val, index) {
+                        return index % /*2*/ 1 == 0 ? this.getLabelForValue(val) : ''
+                    }
+                }
+            }
+        }
+    }
+}
+let labelsC2 = ['2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019']
+let dataC2 = {
+    labels:labelsC2,
+    datasets: [{
+        data: [211,326,165,350,420,370,500,375,415],
+        label: 'Sales of this year erasasa',
+        borderColor: '#E59008',
+        backgroundColor: '#E59008'
+        },
+    ],
+}
+
+let configC2 = {
+    type: 'line',
+    data: dataC2,
     options: {
         responsive: true,
         scales: {
@@ -364,8 +424,8 @@ let config = {
     }
 }
 
-let chart1 = new Chart(ctx1, config)
-let chart2 = new Chart(ctx2, config)
+let chart1 = new Chart(ctx1, configC1)
+let chart2 = new Chart(ctx2, configC2)
 
 //Gets data of a single coin
 async function getCoinData(id) {

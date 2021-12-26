@@ -73,6 +73,15 @@ nav .links p:hover {
   display: flex;
 }
 
+.main .main-resizer {
+  height: 100%;
+  width: 3px;
+  background: #918e8e;
+  cursor: e-resize;
+  -webkit-transition: .15s ease-in-out;
+  transition: .15s ease-in-out;
+}
+
 .main .charts {
   -webkit-box-flex: 10;
       -ms-flex-positive: 10;
@@ -99,7 +108,8 @@ nav .links p:hover {
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
-  max-width: 130px;
+  max-width: 30%;
+  min-width: 15px;
   -webkit-box-flex: 1;
       -ms-flex-positive: 1;
           flex-grow: 1;
@@ -111,7 +121,6 @@ nav .links p:hover {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
-  border-left: 1px solid black;
 }
 
 .main .coins-list .search-coins {
@@ -184,7 +193,7 @@ nav .links p:hover {
 }
 
 .main .list-resizer {
-  height: 4px;
+  height: 3px;
   width: 100%;
   background: #918e8e;
   cursor: n-resize;
@@ -194,7 +203,7 @@ nav .links p:hover {
 
 .main .sorted-coins {
   height: 50%;
-  max-width: 130px;
+  width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
 }
