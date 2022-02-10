@@ -80,6 +80,17 @@ nav .links p:hover {
   cursor: e-resize;
   -webkit-transition: .15s ease-in-out;
   transition: .15s ease-in-out;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  color: white;
+  font-size: 32px;
 }
 
 .main .charts {
@@ -227,6 +238,17 @@ nav .links p:hover {
   cursor: n-resize;
   -webkit-transition: 0.15s ease-in-out;
   transition: 0.15s ease-in-out;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  color: white;
+  font-size: 64px;
 }
 
 .main .sorted-coins {

@@ -13522,10 +13522,11 @@ const Chart = require('chart.js')
 //was in the chart to render it again with new info
 let coinIdChart1;
 let coinIdChart2;
+
 function showInChart(coin, chartNum, days=1, interval='hourly') {
     if(chartNum==1) coinIdChart1 = coin.id
     if(chartNum==2) coinIdChart2 = coin.id
-    const action = getCoinData(coin.id, days, interval)
+    getCoinData(coin.id, days, interval)
     .then(response => {
         console.log(response)
         const symbol = coin.symbol.toUpperCase()
@@ -13536,7 +13537,7 @@ function showInChart(coin, chartNum, days=1, interval='hourly') {
                 minimumIntegerDigits: 2,
                 useGrouping: false
             })
-            const month = coso.getMonth()
+            const month = coso.getMonth()+1
             return `${day}/${month}`
         })
         const data = {symbol, priceValues, dateValues}
@@ -13544,6 +13545,12 @@ function showInChart(coin, chartNum, days=1, interval='hourly') {
     })
     .catch(err => console.log(err))
 }
+
+// To have initial coins when pageload
+showInChart({id: 'bitcoin', symbol: 'btc'}, 1)
+showInChart({id: 'ethereum', symbol: 'eth'}, 2)
+
+
 //Resets the data with the coin passed to show
 function updateChart(data, chartNum) {
     if(chartNum==1) {
@@ -13558,12 +13565,12 @@ function updateChart(data, chartNum) {
         chart2.update()
     }
 }
-let labelsC1 = ['2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019']
+let labelsC1 = []
 let dataC1 = {
     labels:labelsC1,
     datasets: [{
-        data: [211,326,165,350,420,370,500,375,415],
-        label: 'Sales of this year erasasa',
+        data: [],
+        label: '',
         borderColor: '#E59008',
         backgroundColor: '#E59008'
         },
@@ -13588,12 +13595,12 @@ let configC1 = {
         }
     }
 }
-let labelsC2 = ['2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019']
+let labelsC2 = []
 let dataC2 = {
     labels:labelsC2,
     datasets: [{
-        data: [211,326,165,350,420,370,500,375,415],
-        label: 'Sales of this year erasasa',
+        data: [],
+        label: '',
         borderColor: '#E59008',
         backgroundColor: '#E59008'
         },
@@ -13621,6 +13628,7 @@ let configC2 = {
 
 let chart1 = new Chart(ctx1, configC1)
 let chart2 = new Chart(ctx2, configC2)
+
 
 //Gets data of a single coin
 async function getCoinData(id, days, interval) {
